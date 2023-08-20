@@ -48,6 +48,10 @@ const forms = (state) => {
             statusImg.classList.add('animated', 'fadeInUp');
             statusMessage.appendChild(statusImg);
 
+            let textMessage = document.createElement('div');
+            textMessage.textContent = message.loading;
+            statusMessage.appendChild(textMessage);
+
             const formData = new FormData(item);
             if (item.getAttribute('data-calc') === "end") {
                 for(let key in state) {
