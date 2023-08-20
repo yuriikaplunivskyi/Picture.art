@@ -15,6 +15,11 @@ const forms = (state) => {
         fail: 'assets/img/fail.png'
     };
 
+    const path = {
+        designer: 'assets/server.php',
+        question: 'assets/question.php'
+    }
+
     const postData = async (url, data) => {
         let res = await fetch(url, {
             method: "POST",
@@ -53,11 +58,9 @@ const forms = (state) => {
             statusMessage.appendChild(textMessage);
 
             const formData = new FormData(item);
-            if (item.getAttribute('data-calc') === "end") {
-                for(let key in state) {
-                    formData.append(key, state[key]);
-                }
-            }
+            let api;
+            item.closest('.popup-design') ? api = path.designer : path.question;
+            
 
             postData('assets/server.php', formData)
                 .then(res => {
