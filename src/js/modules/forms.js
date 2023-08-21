@@ -2,7 +2,8 @@
 
 const forms = (state) => {
     const form = document.querySelectorAll('form'),
-          inputs = document.querySelectorAll('input');
+          inputs = document.querySelectorAll('input'),
+          upload = document.querySelectorAll('[name="upload"]');
 
     //checkNumInputs('input[name="user_phone"]');
     
@@ -33,7 +34,21 @@ const forms = (state) => {
         inputs.forEach(item => {
             item.value = '';
         });
+        upload.forEach(item => {
+            item.previousElementSibling.textContent = 'Файл не выбран';
+        })
     };
+
+    upload.forEach(item => {
+        item.addEventListener('input', () => {
+            console.log(item.files[0]);
+            let dots;
+            const arr = item.files[0].name.split('.')
+            arr[0].length > 6 ? dots = '...' : dots = '.';
+            const name = arr[0].substring(0, 6) + dots + arr[1];
+            item.previousElementSibling.textContent = name;
+        });
+    })
 
     form.forEach(item => {
         item.addEventListener('submit', (e) => {
@@ -59,19 +74,26 @@ const forms = (state) => {
 
             const formData = new FormData(item);
             let api;
-            item.closest('.popup-design') ? api = path.designer : path.question;
+            item.closest('.popup-design') || item.classList.contains('calc_form') ? api = path.designer : path.question;
             
 
-            postData('assets/server.php', formData)
+            postData(api, formData)
                 .then(res => {
                     console.log(res);
-                    statusMessage.textContent = message.success;
+                    statusImg.setAttribute('src', message.ok)
+                    textMessage.textContent = message.success;
                 })
-                .catch(() => statusMessage.textContent = message.failure)
+                .catch(() => {
+                    statusImg.setAttribute('src', message.fail)
+                    textMessage.textContent = message.failure;
+                })
                 .finally(() => {
                     clearInputs();
                     setTimeout(() => {
                         statusMessage.remove();
+                        item.style.display = 'block';
+                        item.classList.remove('fadeOutUp');
+                        item.classList.add('fadeInUp');
                     }, 5000);
                 });
         });
